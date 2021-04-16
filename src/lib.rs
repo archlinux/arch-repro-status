@@ -4,9 +4,11 @@
 //! [archlinux.org]: https://archlinux.org/packages
 //! [rebuilderd]: https://wiki.archlinux.org/index.php/Rebuilderd
 
+pub mod args;
 pub mod error;
 mod types;
 
+use args::Args;
 use error::ReproCheckError;
 use futures::executor;
 use futures::future;
@@ -45,14 +47,11 @@ async fn fetch_rebuilderd_packages<'a>(
 }
 
 /// Runs `arch-repro-status` and returns the result.
-pub fn run() -> Result<Vec<String>, ReproCheckError> {
-    // TODO: use args
-    let maintainer = "orhun";
-    let rebuilder = "https://reproducible.archlinux.org";
+pub fn run(args: Args) -> Result<Vec<String>, ReproCheckError> {
     let client = HttpClient::builder().build()?;
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
-        fetch_archweb_packages(&client, maintainer),
-        fetch_rebuilderd_packages(&client, rebuilder),
+        fetch_archweb_packages(&client, &args.maintainer),
+        fetch_rebuilderd_packages(&client, &args.rebuilderd),
     ))?;
     let mut results = Vec::new();
     for pkg in archweb {
