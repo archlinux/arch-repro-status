@@ -9,7 +9,7 @@ pub mod error;
 mod types;
 
 use args::Args;
-use error::ReproCheckError;
+use error::ReproStatusError;
 use futures::executor;
 use futures::future;
 use reqwest::Client as HttpClient;
@@ -23,7 +23,7 @@ const ARCHWEB_ENDPOINT: &str = "https://archlinux.org/packages/search/json";
 async fn fetch_archweb_packages<'a>(
     client: &'a HttpClient,
     maintainer: &'a str,
-) -> Result<Vec<ArchwebPackage>, ReproCheckError> {
+) -> Result<Vec<ArchwebPackage>, ReproStatusError> {
     Ok(client
         .get(&format!("{}/?maintainer={}", ARCHWEB_ENDPOINT, maintainer))
         .send()
@@ -37,7 +37,7 @@ async fn fetch_archweb_packages<'a>(
 async fn fetch_rebuilderd_packages<'a>(
     client: &'a HttpClient,
     rebuilder: &'a str,
-) -> Result<Vec<RebuilderdPackage>, ReproCheckError> {
+) -> Result<Vec<RebuilderdPackage>, ReproStatusError> {
     Ok(client
         .get(format!("{}/api/v0/pkgs/list?distro=archlinux", rebuilder))
         .send()
@@ -47,7 +47,7 @@ async fn fetch_rebuilderd_packages<'a>(
 }
 
 /// Runs `arch-repro-status` and returns the result.
-pub fn run(args: Args) -> Result<Vec<String>, ReproCheckError> {
+pub fn run(args: Args) -> Result<Vec<String>, ReproStatusError> {
     let client = HttpClient::builder().build()?;
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
         fetch_archweb_packages(&client, &args.maintainer),

@@ -4,7 +4,7 @@ use thiserror::Error;
 
 /// Application error.
 #[derive(Error, Debug)]
-pub enum ReproCheckError {
+pub enum ReproStatusError {
     /// Error that may occur when processing a request.
     #[error("failed to send request: `{0}`")]
     RequestError(#[from] reqwest::Error),
