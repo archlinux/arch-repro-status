@@ -1,5 +1,6 @@
 //! Command-line argument parser.
 
+use rebuilderd_common::Status;
 use structopt::clap::AppSettings;
 use structopt::StructOpt;
 
@@ -29,4 +30,7 @@ pub struct Args {
         default_value = "https://reproducible.archlinux.org"
     )]
     pub rebuilderd: String,
+    /// Sets the filter for package status.
+    #[structopt(short, long, env = "FILTER", value_name = "STATUS")]
+    pub filter: Option<Status>,
 }

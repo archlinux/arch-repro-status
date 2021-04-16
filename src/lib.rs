@@ -48,7 +48,7 @@ async fn fetch_rebuilderd_packages<'a>(
 }
 
 /// Runs `arch-repro-status` and returns the result.
-pub fn run(args: Args) -> Result<Vec<(Status, ArchwebPackage)>, ReproStatusError> {
+pub fn run<'a>(args: &'a Args) -> Result<Vec<(Status, ArchwebPackage)>, ReproStatusError> {
     let client = HttpClient::builder().build()?;
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
         fetch_archweb_packages(&client, &args.maintainer),

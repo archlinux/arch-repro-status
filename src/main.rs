@@ -10,12 +10,16 @@ async fn main() {
         env::set_var("RUST_LOG", "info");
     }
     pretty_env_logger::init();
-    match arch_repro_status::run(Args::from_args()) {
+    let args = Args::from_args();
+    match arch_repro_status::run(&args) {
         Ok(results) => {
             let mut negatives = 0;
             for (status, pkg) in results {
                 if status == Status::Bad {
                     negatives += 1;
+                }
+                if Some(status) != args.filter {
+                    continue;
                 }
                 println!(
                     "[{}] {} {}-{} {}",
