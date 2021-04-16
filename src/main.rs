@@ -18,8 +18,10 @@ async fn main() {
                 if status == Status::Bad {
                     negatives += 1;
                 }
-                if Some(status) != args.filter {
-                    continue;
+                if let Some(filter) = args.filter {
+                    if status != filter {
+                        continue;
+                    }
                 }
                 println!(
                     "[{}] {} {}-{} {}",
