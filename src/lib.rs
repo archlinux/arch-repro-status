@@ -12,6 +12,7 @@ use args::Args;
 use error::ReproStatusError;
 use futures::executor;
 use futures::future;
+use rebuilderd_common::Status;
 use reqwest::Client as HttpClient;
 use types::archweb::{Package as ArchwebPackage, SearchResult};
 use types::rebuilderd::Package as RebuilderdPackage;
@@ -47,7 +48,7 @@ async fn fetch_rebuilderd_packages<'a>(
 }
 
 /// Runs `arch-repro-status` and returns the result.
-pub fn run(args: Args) -> Result<Vec<String>, ReproStatusError> {
+pub fn run(args: Args) -> Result<Vec<(Status, ArchwebPackage)>, ReproStatusError> {
     let client = HttpClient::builder().build()?;
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
         fetch_archweb_packages(&client, &args.maintainer),
@@ -55,15 +56,12 @@ pub fn run(args: Args) -> Result<Vec<String>, ReproStatusError> {
     ))?;
     let mut results = Vec::new();
     for pkg in archweb {
-        results.push(format!(
-            "{} {}-{} {}",
-            pkg.pkgname,
-            pkg.pkgver,
-            pkg.pkgrel,
+        results.push((
             match rebuilderd.iter().find(|p| p.name == pkg.pkgname) {
-                Some(p) => &p.status,
-                None => "NOTFOUND",
-            }
+                Some(p) => p.status,
+                None => Status::Unknown,
+            },
+            pkg,
         ))
     }
     Ok(results)

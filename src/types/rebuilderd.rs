@@ -1,9 +1,11 @@
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+use rebuilderd_common::Status;
+
+#[derive(Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Package {
     pub name: String,
     pub version: String,
-    pub status: String,
+    pub status: Status,
     pub distro: String,
     pub suite: String,
     pub architecture: String,
