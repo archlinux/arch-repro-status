@@ -9,6 +9,7 @@ pub mod error;
 mod types;
 
 use args::Args;
+use colored::*;
 use error::ReproStatusError;
 use futures::executor;
 use futures::future;
@@ -47,8 +48,40 @@ async fn fetch_rebuilderd_packages<'a>(
         .await?)
 }
 
-/// Runs `arch-repro-status` and returns the result.
-pub fn run<'a>(args: &'a Args) -> Result<Vec<(Status, ArchwebPackage)>, ReproStatusError> {
+/// Prints the status of the packages.
+fn print_results(results: Vec<(Status, ArchwebPackage)>, filter: Option<Status>) {
+    let mut negatives = 0;
+    for (status, pkg) in results {
+        if status == Status::Bad {
+            negatives += 1;
+        }
+        if let Some(filter) = filter {
+            if status != filter {
+                continue;
+            }
+        }
+        println!(
+            "[{}] {} {}-{} {}",
+            match status {
+                Status::Good => "+".green(),
+                Status::Bad => "-".red(),
+                Status::Unknown => "?".yellow(),
+            },
+            pkg.pkgname,
+            pkg.pkgver,
+            pkg.pkgrel,
+            status.fancy()
+        );
+    }
+    match negatives {
+        0 => log::info!("All packages are reproducible!"),
+        1 => log::info!("1 package is not reproducible."),
+        _ => log::info!("{} packages are not reproducible.", negatives),
+    }
+}
+
+/// Runs `arch-repro-status` and prints the results.
+pub fn run(args: Args) -> Result<(), ReproStatusError> {
     let client = HttpClient::builder().build()?;
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
         fetch_archweb_packages(&client, &args.maintainer),
@@ -64,7 +97,8 @@ pub fn run<'a>(args: &'a Args) -> Result<Vec<(Status, ArchwebPackage)>, ReproSta
             pkg,
         ))
     }
-    Ok(results)
+    print_results(results, args.filter);
+    Ok(())
 }
 
 #[cfg(test)]
