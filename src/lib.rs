@@ -7,13 +7,14 @@
 pub mod archweb;
 pub mod args;
 pub mod error;
+pub mod package;
 
-use archweb::{Package as ArchwebPackage, SearchResult, ARCHWEB_ENDPOINT};
+use archweb::{ArchwebPackage, SearchResult, ARCHWEB_ENDPOINT};
 use args::Args;
 use colored::*;
 use error::ReproStatusError;
-use futures::executor;
-use futures::future;
+use futures::{executor, future};
+use package::Package;
 use rebuilderd_common::{PkgRelease as RebuilderdPackage, Status};
 use reqwest::Client as HttpClient;
 use std::io::{self, Write};
@@ -47,32 +48,32 @@ async fn fetch_rebuilderd_packages<'a>(
 
 /// Prints the status of the packages to the specified output.
 fn print_results<Output: Write>(
-    results: Vec<(Status, ArchwebPackage)>,
+    packages: Vec<Package>,
     filter: Option<Status>,
     output: &mut Output,
 ) -> Result<(), ReproStatusError> {
     let mut negatives = 0;
-    for (status, pkg) in results {
-        if status == Status::Bad {
+    for pkg in packages {
+        if pkg.status == Status::Bad {
             negatives += 1;
         }
         if let Some(filter) = filter {
-            if status != filter {
+            if pkg.status != filter {
                 continue;
             }
         }
         writeln!(
             output,
             "[{}] {} {}-{} {}",
-            match status {
+            match pkg.status {
                 Status::Good => "+".green(),
                 Status::Bad => "-".red(),
                 Status::Unknown => "?".yellow(),
             },
-            pkg.pkgname,
-            pkg.pkgver,
-            pkg.pkgrel,
-            status.fancy()
+            pkg.data.pkgname,
+            pkg.data.pkgver,
+            pkg.data.pkgrel,
+            pkg.status.fancy()
         )?;
     }
     match negatives {
@@ -90,17 +91,22 @@ pub fn run(args: Args) -> Result<(), ReproStatusError> {
         fetch_archweb_packages(&client, &args.maintainer),
         fetch_rebuilderd_packages(&client, &args.rebuilderd),
     ))?;
-    let mut results = Vec::new();
+    let mut packages = Vec::new();
     for pkg in archweb {
-        results.push((
-            match rebuilderd.iter().find(|p| p.name == pkg.pkgname) {
-                Some(p) => p.status,
-                None => Status::Unknown,
+        packages.push(match rebuilderd.iter().find(|p| p.name == pkg.pkgname) {
+            Some(p) => Package {
+                data: pkg,
+                status: p.status,
+                build_id: p.build_id.unwrap_or_default(),
             },
-            pkg,
-        ))
+            None => Package {
+                data: pkg,
+                status: Status::Unknown,
+                build_id: 0,
+            },
+        })
     }
-    print_results(results, args.filter, &mut io::stdout())
+    print_results(packages, args.filter, &mut io::stdout())
 }
 
 #[cfg(test)]
@@ -135,24 +141,26 @@ mod tests {
         let mut output = Vec::new();
         print_results(
             vec![
-                (
-                    Status::Good,
-                    ArchwebPackage {
+                Package {
+                    data: ArchwebPackage {
                         pkgname: String::from("test"),
                         pkgver: String::from("0.1"),
                         pkgrel: String::from("2"),
                         ..ArchwebPackage::default()
                     },
-                ),
-                (
-                    Status::Bad,
-                    ArchwebPackage {
+                    status: Status::Good,
+                    build_id: 0,
+                },
+                Package {
+                    data: ArchwebPackage {
                         pkgname: String::from("xyz"),
                         pkgver: String::from("0.4"),
                         pkgrel: String::from("1"),
                         ..ArchwebPackage::default()
                     },
-                ),
+                    status: Status::Bad,
+                    build_id: 0,
+                },
             ],
             None,
             &mut output,

@@ -1,4 +1,4 @@
-//! Types for the Arch Linux website.
+//! Package data from the Arch Linux website.
 
 /// JSON endpoint to use for searching packages.
 pub const ARCHWEB_ENDPOINT: &str = "https://archlinux.org/packages/search/json";
@@ -10,7 +10,7 @@ pub struct SearchResult {
     pub version: i64,
     pub limit: i64,
     pub valid: bool,
-    pub results: Vec<Package>,
+    pub results: Vec<ArchwebPackage>,
     #[serde(rename = "num_pages")]
     pub num_pages: Option<i64>,
     pub page: Option<i64>,
@@ -19,7 +19,7 @@ pub struct SearchResult {
 /// Package data that archlinux.org provides.
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Package {
+pub struct ArchwebPackage {
     pub pkgname: String,
     pub pkgbase: String,
     pub repo: String,
