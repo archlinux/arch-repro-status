@@ -49,8 +49,13 @@ impl fmt::Display for Package {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "{} {}-{} {}",
+            "{} {}{}-{} {}",
             self.data.pkgname,
+            if self.data.epoch != 0 {
+                format!("{}:", self.data.epoch)
+            } else {
+                String::new()
+            },
             self.data.pkgver,
             self.data.pkgrel,
             self.status.fancy()
