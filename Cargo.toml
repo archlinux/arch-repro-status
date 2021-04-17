@@ -3,6 +3,8 @@ name = "arch-repro-status"
 version = "0.1.0"
 description = "Check the reproducibility status of your Arch Linux packages"
 authors = ["Orhun Parmaksız <orhun@archlinux.org>"]
+license = "MIT"
+readme = "README.md"
 edition = "2018"
 
 [dependencies]

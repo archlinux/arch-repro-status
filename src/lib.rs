@@ -1,4 +1,4 @@
-//! Finds the reproducibility status of the packages of a maintainer
+//! Finds the reproducibility status of a maintainer's packages
 //! using package data from [archlinux.org] and a [rebuilderd] instance.
 //!
 //! [archlinux.org]: https://archlinux.org/packages
