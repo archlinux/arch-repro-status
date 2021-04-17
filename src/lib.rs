@@ -4,23 +4,19 @@
 //! [archlinux.org]: https://archlinux.org/packages
 //! [rebuilderd]: https://wiki.archlinux.org/index.php/Rebuilderd
 
+pub mod archweb;
 pub mod args;
 pub mod error;
-mod types;
 
+use archweb::{Package as ArchwebPackage, SearchResult, ARCHWEB_ENDPOINT};
 use args::Args;
 use colored::*;
 use error::ReproStatusError;
 use futures::executor;
 use futures::future;
-use rebuilderd_common::Status;
+use rebuilderd_common::{PkgRelease as RebuilderdPackage, Status};
 use reqwest::Client as HttpClient;
 use std::io::{self, Write};
-use types::archweb::{Package as ArchwebPackage, SearchResult};
-use types::rebuilderd::Package as RebuilderdPackage;
-
-/// JSON endpoint to use for searching packages.
-const ARCHWEB_ENDPOINT: &str = "https://archlinux.org/packages/search/json";
 
 /// Fetches the packages of the specified maintainer from archlinux.org
 async fn fetch_archweb_packages<'a>(
