@@ -137,7 +137,7 @@ fn print_results<Output: Write>(
     output: &mut Output,
 ) -> Result<(), ReproStatusError> {
     let mut negatives = 0;
-    for pkg in packages {
+    for pkg in &packages {
         if pkg.status == Status::Bad {
             negatives += 1;
         }
@@ -157,10 +157,14 @@ fn print_results<Output: Write>(
             pkg
         )?;
     }
-    match negatives {
-        0 => log::info!("All packages are reproducible!"),
-        1 => log::info!("1 package is not reproducible."),
-        _ => log::info!("{} packages are not reproducible.", negatives),
+    if packages.is_empty() {
+        log::warn!("No packages found.")
+    } else {
+        match negatives {
+            0 => log::info!("All packages are reproducible!"),
+            1 => log::info!("1 package is not reproducible."),
+            _ => log::info!("{} packages are not reproducible.", negatives),
+        }
     }
     Ok(())
 }
