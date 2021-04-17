@@ -11,6 +11,9 @@ pub enum ReproStatusError {
     /// Error that may occur when processing a request.
     #[error("failed to send request: `{0}`")]
     RequestError(#[from] reqwest::Error),
+    /// Error that may occur while handling Ctrl-C signals.
+    #[error("Ctrl-C error: `{0}`")]
+    SignalError(#[from] ctrlc::Error),
     /// Unknown error.
     #[error("unknown error")]
     Unknown,

@@ -18,6 +18,9 @@ log = "0.4.14"
 pretty_env_logger = "0.4.0"
 rebuilderd-common = "0.10.0"
 colored = "2.0.0"
+dialoguer = "0.8.0"
+ctrlc = { version = "3.1.9", features = ["termination"] }
+console = "0.14.1"
 
 [dependencies.structopt]
 version = "0.3.21"

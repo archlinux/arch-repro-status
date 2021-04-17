@@ -12,12 +12,18 @@ pub mod package;
 use archweb::{ArchwebPackage, SearchResult, ARCHWEB_ENDPOINT};
 use args::Args;
 use colored::*;
+use console::Term;
+use dialoguer::theme::ColorfulTheme;
+use dialoguer::Select;
 use error::ReproStatusError;
 use futures::{executor, future};
-use package::Package;
+use package::{LogType, Package};
 use rebuilderd_common::{PkgRelease as RebuilderdPackage, Status};
 use reqwest::Client as HttpClient;
+use std::convert::TryInto;
+use std::fs;
 use std::io::{self, Write};
+use std::process::Command;
 
 /// Fetches the packages of the specified maintainer from archlinux.org
 async fn fetch_archweb_packages<'a>(
@@ -46,6 +52,84 @@ async fn fetch_rebuilderd_packages<'a>(
         .await?)
 }
 
+/// Fetches the package logs from the specified rebuilderd instance.
+async fn fetch_rebuilderd_logs<'a>(
+    client: &'a HttpClient,
+    rebuilder: &'a str,
+    build_id: i32,
+    log_type: LogType,
+) -> Result<String, ReproStatusError> {
+    Ok(client
+        .get(&format!(
+            "{}/api/v0/builds/{}/{}",
+            rebuilder,
+            build_id,
+            match log_type {
+                LogType::Build => "log",
+                LogType::Diffoscope => "diffoscope",
+            }
+        ))
+        .send()
+        .await?
+        .text()
+        .await?)
+}
+
+/// Presents an interactive selection dialog for providing
+/// options for selecting a package and operation.
+///
+/// Possible operations are: showing the build logs and diffoscope.
+/// It fetches the logs from rebuilderd and shows them via specified pager.
+async fn inspect_packages<'a>(
+    mut packages: Vec<Package>,
+    filter: Option<Status>,
+    default_selection: i32,
+    client: &'a HttpClient,
+    rebuilder: &'a str,
+    pager: &'a str,
+) -> Result<Option<i32>, ReproStatusError> {
+    if let Some(filter) = filter {
+        packages = packages
+            .into_iter()
+            .filter(|pkg| pkg.status == filter)
+            .collect();
+    }
+    let items = packages
+        .iter()
+        .map(|pkg| pkg.to_string())
+        .collect::<Vec<String>>();
+    if let Some(index) = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("Select package to inspect")
+        .default(default_selection.try_into().unwrap_or_default())
+        .items(&items)
+        .interact_on_opt(&Term::stderr())
+        .map_or(None, |v| v)
+    {
+        let log_type = match Select::with_theme(&ColorfulTheme::default())
+            .with_prompt("Select operation")
+            .default(0)
+            .items(&["show build log", "show diffoscope"])
+            .interact_on_opt(&Term::stderr())?
+        {
+            Some(0) => LogType::Build,
+            _ => LogType::Diffoscope,
+        };
+        let logs =
+            fetch_rebuilderd_logs(client, rebuilder, packages[index].build_id, log_type).await?;
+        let path = packages[index].get_log_path(log_type)?;
+        fs::write(&path, logs)?;
+        match Command::new(pager).arg(path).spawn() {
+            Ok(mut child) => {
+                child.wait()?;
+                Ok(Some(index.try_into().unwrap_or_default()))
+            }
+            Err(e) => Err(ReproStatusError::IoError(e)),
+        }
+    } else {
+        Ok(None)
+    }
+}
+
 /// Prints the status of the packages to the specified output.
 fn print_results<Output: Write>(
     packages: Vec<Package>,
@@ -64,16 +148,13 @@ fn print_results<Output: Write>(
         }
         writeln!(
             output,
-            "[{}] {} {}-{} {}",
+            "[{}] {}",
             match pkg.status {
                 Status::Good => "+".green(),
                 Status::Bad => "-".red(),
                 Status::Unknown => "?".yellow(),
             },
-            pkg.data.pkgname,
-            pkg.data.pkgver,
-            pkg.data.pkgrel,
-            pkg.status.fancy()
+            pkg
         )?;
     }
     match negatives {
@@ -106,7 +187,23 @@ pub fn run(args: Args) -> Result<(), ReproStatusError> {
             },
         })
     }
-    print_results(packages, args.filter, &mut io::stdout())
+    if args.inspect {
+        ctrlc::set_handler(move || Term::stdout().show_cursor().expect("failed to show cursor"))?;
+        let mut default_selection = Some(0);
+        while let Some(selection) = default_selection {
+            default_selection = executor::block_on(inspect_packages(
+                packages.clone(),
+                args.filter,
+                selection,
+                &client,
+                &args.rebuilderd,
+                &args.pager,
+            ))?;
+        }
+        Ok(())
+    } else {
+        print_results(packages, args.filter, &mut io::stdout())
+    }
 }
 
 #[cfg(test)]
@@ -115,6 +212,9 @@ mod tests {
     use anyhow::Result;
     use pretty_assertions::assert_eq;
     use std::str;
+
+    /// Rebuilderd instance to use for testing.
+    const REBUILDERD_URL: &str = "https://reproducible.archlinux.org";
 
     #[tokio::test]
     async fn test_fetch_archweb_packages() -> Result<()> {
@@ -128,10 +228,18 @@ mod tests {
     #[tokio::test]
     async fn test_fetch_rebuilderd_packages() -> Result<()> {
         let client = HttpClient::new();
-        assert!(
-            !fetch_rebuilderd_packages(&client, "https://reproducible.archlinux.org")
-                .await?
-                .is_empty()
+        assert!(!fetch_rebuilderd_packages(&client, REBUILDERD_URL)
+            .await?
+            .is_empty());
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_fetch_rebuilderd_logs() -> Result<()> {
+        let client = HttpClient::new();
+        assert_eq!(
+            "Not found\n",
+            fetch_rebuilderd_logs(&client, REBUILDERD_URL, 0, LogType::Build).await?
         );
         Ok(())
     }

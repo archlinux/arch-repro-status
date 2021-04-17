@@ -39,6 +39,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "colored",
+ "console",
+ "ctrlc",
+ "dialoguer",
  "futures",
  "log",
  "pretty_assertions",
@@ -147,6 +150,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "console"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3993e6445baa160675931ec041a5e03ca84b9c6e32a056150d3aa2bdda0a1f45"
+dependencies = [
+ "encode_unicode",
+ "lazy_static",
+ "libc",
+ "regex",
+ "terminal_size",
+ "unicode-width",
+ "winapi",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -170,6 +188,28 @@ checksum = "5e98e2ad1a782e33928b96fc3948e7c355e5af34ba4de7670fe8bac2a3b2006d"
 dependencies = [
  "quote",
  "syn",
+]
+
+[[package]]
+name = "ctrlc"
+version = "3.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "232295399409a8b7ae41276757b5a1cc21032848d42bff2352261f958b3ca29a"
+dependencies = [
+ "nix",
+ "winapi",
+]
+
+[[package]]
+name = "dialoguer"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c9dd058f8b65922819fabb4a41e7d1964e56344042c26efbccd465202c23fa0c"
+dependencies = [
+ "console",
+ "lazy_static",
+ "tempfile",
+ "zeroize",
 ]
 
 [[package]]
@@ -198,6 +238,12 @@ dependencies = [
  "redox_users",
  "winapi",
 ]
+
+[[package]]
+name = "encode_unicode"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 
 [[package]]
 name = "encoding_rs"
@@ -615,6 +661,18 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "tempfile",
+]
+
+[[package]]
+name = "nix"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fa9b4819da1bc61c0ea48b63b7bc8604064dd43013e7cc325df098d49cd7c18a"
+dependencies = [
+ "bitflags",
+ "cc",
+ "cfg-if",
+ "libc",
 ]
 
 [[package]]
@@ -1210,6 +1268,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "terminal_size"
+version = "0.1.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86ca8ced750734db02076f44132d802af0b33b09942331f4459dde8636fd2406"
+dependencies = [
+ "libc",
+ "winapi",
+]
+
+[[package]]
 name = "textwrap"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1553,3 +1621,9 @@ checksum = "0120db82e8a1e0b9fb3345a539c478767c0048d842860994d96113d5b667bd69"
 dependencies = [
  "winapi",
 ]
+
+[[package]]
+name = "zeroize"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81a974bcdd357f0dca4d41677db03436324d45a4c9ed2d0b873a5a360ce41c36"
