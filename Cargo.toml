@@ -6,6 +6,7 @@ authors = ["Orhun Parmaksız <orhun@archlinux.org>"]
 license = "MIT"
 readme = "README.md"
 edition = "2018"
+default-run = "arch-repro-status"
 
 [dependencies]
 reqwest = { version = "0.11.3", features = ["json"] }
