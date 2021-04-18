@@ -43,6 +43,20 @@ arch-repro-status -i -m orhun -f BAD
 
 ![Inspecting packages](https://user-images.githubusercontent.com/24392180/115127748-a1721b80-9fe1-11eb-90cb-973a750515d7.gif)
 
+## Examples
+
+```sh
+export MAINTAINER=<username>
+# print out BAD results
+arch-repro-status -f BAD
+# enable interactive mode
+arch-repro-status -i -f BAD
+# use `bat` to view files
+arch-repro-status -i --pager bat
+# specify rebuilderd
+arch-repro-status --rebuilderd https://wolfpit.net/rebuild/
+```
+
 ## License
 
 [The MIT License](https://opensource.org/licenses/MIT)
