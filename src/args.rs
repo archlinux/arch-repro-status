@@ -31,7 +31,13 @@ pub struct Args {
     )]
     pub rebuilderd: String,
     /// Sets the filter for package status.
-    #[structopt(short, long, env = "FILTER", value_name = "STATUS")]
+    #[structopt(
+        short,
+        long,
+        env = "FILTER",
+        value_name = "STATUS",
+        possible_values = &["GOOD", "BAD", "UNKWN"]
+    )]
     pub filter: Option<Status>,
     /// Views the build log or diffoscope of the interactively selected package.
     #[structopt(short, long)]

@@ -21,8 +21,9 @@ OPTIONS:
     -r, --rebuilderd <URL>           Sets the address of the rebuilderd instance [env: REBUILDERD=]
                                      [default: https://reproducible.archlinux.org]
     -f, --filter <STATUS>            Sets the filter for package status [env: FILTER=]
-    -p, --pager <PAGER>              Sets the pager for viewing files [env: PAGER=]  [default:
-                                     less]
+                                     [possible values: GOOD, BAD, UNKWN]
+    -p, --pager <PAGER>              Sets the pager for viewing files [env: PAGER=]
+                                     [default: less]
 ```
 
 ### Listing packages
