@@ -33,7 +33,7 @@ pub struct Args {
     /// Sets the filter for package status.
     #[structopt(short, long, env = "FILTER", value_name = "STATUS")]
     pub filter: Option<Status>,
-    /// Views the build log and diffoscope of the selected package.
+    /// Views the build log or diffoscope of the interactively selected package.
     #[structopt(short, long)]
     pub inspect: bool,
     /// Sets the pager for viewing files.

@@ -12,7 +12,7 @@ arch-repro-status [FLAGS] [OPTIONS] --maintainer <MAINTAINER>
 
 ```
 FLAGS:
-    -i, --inspect    Views the build log and diffoscope of the selected package
+    -i, --inspect    Views the build log or diffoscope of the interactively selected package
     -h, --help       Prints help information
     -V, --version    Prints version information
 
