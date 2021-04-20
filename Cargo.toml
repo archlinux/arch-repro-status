@@ -8,6 +8,7 @@ readme = "README.md"
 license = "MIT"
 keywords = ["archlinux", "reproducibility", "build"]
 categories = ["command-line-utilities"]
+publish = false
 default-run = "arch-repro-status"
 
 [dependencies]
