@@ -25,4 +25,4 @@ audit:
 test:
   stage: test
   script:
-    - cargo test --all --release
+    - cargo test --all --release --features dumb_terminal

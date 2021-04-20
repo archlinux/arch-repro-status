@@ -278,11 +278,7 @@ mod tests {
             &mut output,
         )?;
         assert_eq!(
-            vec![
-                "[\u{1b}[32m+\u{1b}[0m] test 0.1-2 \u{1b}[32mGOOD \u{1b}[0m",
-                "[\u{1b}[31m-\u{1b}[0m] xyz 0.4-1 \u{1b}[31mBAD  \u{1b}[0m\n"
-            ]
-            .join("\n"),
+            "[+] test 0.1-2 GOOD \n[-] xyz 0.4-1 BAD  \n",
             str::from_utf8(&output)?
         );
         Ok(())
