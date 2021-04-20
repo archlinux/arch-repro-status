@@ -2,14 +2,17 @@
 .TH ARCH-REPRO-STATUS "1" "April 2021" "arch-repro-status 0.1.0" "User Commands"
 .SH NAME
 arch-repro-status \- check the reproducibility status of your Arch Linux packages
+
 .SH SYNOPSIS
 .B arch-repro-status
 [FLAGS] [OPTIONS] \fB\-\-maintainer\fR <MAINTAINER>
+
 .SH DESCRIPTION
 Check the reproducibility status of the Arch Linux packages using the data
 from archlinux.org and a rebuilderd instance such as reproducible.archlinux.org.
 It only works with official repositories and it is designed for querying the
 packages of an individual package maintainer.
+
 .SS "FLAGS:"
 .TP
 \fB\-i\fR, \fB\-\-inspect\fR
@@ -33,7 +36,12 @@ Sets the filter for package status [env: FILTER=]  [possible values: GOOD, BAD, 
 .TP
 \fB\-p\fR, \fB\-\-pager\fR <PAGER>
 Sets the pager for viewing files [env: PAGER=]  [default: less]
+
+.SH BUGS
+Report bugs at <https://gitlab.archlinux.org/archlinux/arch-repro-status/-/issues>
+
 .SH ABOUT
 .P
 \fIarch-repro-status\fR is maintained by Orhun Parmaksız, and released under the MIT license.
-.P
+
+See the project homepage at <https://gitlab.archlinux.org/archlinux/arch-repro-status> for full documentation.
