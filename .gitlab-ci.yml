@@ -1,0 +1,28 @@
+image: "archlinux:latest"
+
+before_script:
+  - pacman -Syu --needed --noconfirm rust gcc cargo-audit
+
+stages:
+  - lint
+  - test
+
+format:
+  stage: lint
+  script:
+    - cargo fmt --all -- --check
+
+clippy:
+  stage: lint
+  script:
+    - cargo clippy --all -- -D warnings
+
+audit:
+  stage: lint
+  script:
+    - cargo audit
+
+test:
+  stage: test
+  script:
+    - cargo test --all --release
