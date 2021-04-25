@@ -15,40 +15,35 @@ use structopt::StructOpt;
         AppSettings::ColorAuto,
         AppSettings::ColoredHelp,
         AppSettings::DeriveDisplayOrder,
-    ])
+    ]),
+    rename_all_env = "screaming-snake"
 )]
 pub struct Args {
     /// Sets the username of the maintainer.
-    #[structopt(short, long, env = "MAINTAINER", value_name = "MAINTAINER")]
+    #[structopt(short, long, value_name = "MAINTAINER", env)]
     pub maintainer: String,
     /// Sets the address of the rebuilderd instance.
     #[structopt(
         short,
         long,
-        env = "REBUILDERD",
         value_name = "URL",
-        default_value = "https://reproducible.archlinux.org"
+        default_value = "https://reproducible.archlinux.org",
+        env
     )]
     pub rebuilderd: String,
     /// Sets the filter for package status.
     #[structopt(
         short,
         long,
-        env = "FILTER",
         value_name = "STATUS",
-        possible_values = &["GOOD", "BAD", "UNKWN"]
+        possible_values = &["GOOD", "BAD", "UNKWN"],
+        env
     )]
     pub filter: Option<Status>,
     /// Views the build log or diffoscope of the interactively selected package.
     #[structopt(short, long)]
     pub inspect: bool,
     /// Sets the pager for viewing files.
-    #[structopt(
-        short,
-        long,
-        env = "PAGER",
-        value_name = "PAGER",
-        default_value = "less"
-    )]
+    #[structopt(short, long, value_name = "PAGER", default_value = "less", env)]
     pub pager: String,
 }
