@@ -32,7 +32,7 @@ OPTIONS:
 arch-repro-status -m orhun
 ```
 
-![Listing packages](https://gitlab.archlinux.org/archlinux/arch-repro-status/-/raw/master/demo/listing_packages.gif)
+![Listing packages](./demo/listing_packages.gif)
 
 
 ### Inspecting packages
@@ -41,7 +41,7 @@ arch-repro-status -m orhun
 arch-repro-status -i -m orhun -f BAD
 ```
 
-![Inspecting packages](https://gitlab.archlinux.org/archlinux/arch-repro-status/-/raw/master/demo/inspecting_packages.gif)
+![Inspecting packages](./demo/inspecting_packages.gif)
 
 ## Examples
 
