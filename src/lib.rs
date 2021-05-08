@@ -25,6 +25,9 @@ use std::fs;
 use std::io::{self, Write};
 use std::process::Command;
 
+/// User agent that will be used for requests.
+static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+
 /// Fetches the packages of the specified maintainer from archlinux.org
 async fn fetch_archweb_packages<'a>(
     client: &'a HttpClient,
@@ -174,7 +177,7 @@ fn print_results<Output: Write>(
 
 /// Runs `arch-repro-status` and prints the results.
 pub fn run(args: Args) -> Result<(), ReproStatusError> {
-    let client = HttpClient::builder().build()?;
+    let client = HttpClient::builder().user_agent(APP_USER_AGENT).build()?;
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
         fetch_archweb_packages(&client, &args.maintainer),
         fetch_rebuilderd_packages(&client, &args.rebuilderd),
