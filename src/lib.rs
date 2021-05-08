@@ -82,13 +82,11 @@ async fn fetch_rebuilderd_logs<'a>(
 /// It fetches the logs from rebuilderd and shows them via specified pager.
 async fn inspect_packages<'a>(
     mut packages: Vec<Package>,
-    filter: Option<Status>,
     default_selection: i32,
     client: &'a HttpClient,
-    rebuilder: &'a str,
-    pager: &'a str,
+    args: &'a Args,
 ) -> Result<Option<i32>, ReproStatusError> {
-    if let Some(filter) = filter {
+    if let Some(filter) = args.filter {
         packages = packages
             .into_iter()
             .filter(|pkg| pkg.status == filter)
@@ -114,11 +112,14 @@ async fn inspect_packages<'a>(
             Some(0) => LogType::Build,
             _ => LogType::Diffoscope,
         };
-        let logs =
-            fetch_rebuilderd_logs(client, rebuilder, packages[index].build_id, log_type).await?;
-        let path = packages[index].get_log_path(log_type)?;
-        fs::write(&path, logs)?;
-        match Command::new(pager).arg(path).spawn() {
+        let path = packages[index].get_log_path(log_type, args.cache_dir.as_ref().cloned())?;
+        if !path.exists() {
+            let logs =
+                fetch_rebuilderd_logs(client, &args.rebuilderd, packages[index].build_id, log_type)
+                    .await?;
+            fs::write(&path, logs)?;
+        }
+        match Command::new(&args.pager).arg(path).spawn() {
             Ok(mut child) => {
                 child.wait()?;
                 Ok(Some(index.try_into().unwrap_or_default()))
@@ -197,11 +198,9 @@ pub fn run(args: Args) -> Result<(), ReproStatusError> {
         while let Some(selection) = default_selection {
             default_selection = executor::block_on(inspect_packages(
                 packages.clone(),
-                args.filter,
                 selection,
                 &client,
-                &args.rebuilderd,
-                &args.pager,
+                &args,
             ))?;
         }
         Ok(())

@@ -6,6 +6,7 @@ use rebuilderd_common::Status;
 use std::env;
 use std::fmt;
 use std::fs;
+use std::io::{Error as IoError, ErrorKind as IoErrorKind};
 use std::path::PathBuf;
 
 /// Type of logs that rebuilderd provides.
@@ -65,8 +66,14 @@ impl fmt::Display for Package {
 
 impl Package {
     /// Returns the path to save logs based on the log type and build ID.
-    pub fn get_log_path(&self, log_type: LogType) -> Result<PathBuf, ReproStatusError> {
-        let path = env::temp_dir()
+    pub fn get_log_path(
+        &self,
+        log_type: LogType,
+        cache_dir: Option<PathBuf>,
+    ) -> Result<PathBuf, ReproStatusError> {
+        let path = cache_dir
+            .or_else(dirs_next::cache_dir)
+            .ok_or_else(|| IoError::new(IoErrorKind::Other, "cannot find cache directory"))?
             .join(env!("CARGO_PKG_NAME"))
             .join(format!("{}_{}.log", self.build_id, log_type,));
         if !path.exists() {
@@ -96,9 +103,9 @@ mod tests {
             status: Status::Good,
             build_id: 0,
         };
-        let path = package.get_log_path(LogType::Diffoscope)?;
+        let path = package.get_log_path(LogType::Diffoscope, Some(PathBuf::from("test")))?;
         assert_eq!(
-            format!("/tmp/{}/0_diffoscope.log", env!("CARGO_PKG_NAME")),
+            format!("test/{}/0_diffoscope.log", env!("CARGO_PKG_NAME")),
             path.to_string_lossy()
         );
         Ok(())

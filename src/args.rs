@@ -1,6 +1,7 @@
 //! Command-line argument parser.
 
 use rebuilderd_common::Status;
+use std::path::PathBuf;
 use structopt::clap::AppSettings;
 use structopt::StructOpt;
 
@@ -46,4 +47,7 @@ pub struct Args {
     /// Sets the pager for viewing files.
     #[structopt(short, long, value_name = "PAGER", default_value = "less", env)]
     pub pager: String,
+    /// Sets the cache directory for log files.
+    #[structopt(short, long, value_name = "DIR", env)]
+    pub cache_dir: Option<PathBuf>,
 }
