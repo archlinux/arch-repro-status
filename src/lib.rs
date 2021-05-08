@@ -102,6 +102,7 @@ async fn inspect_packages<'a>(
     if let Some(index) = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Select package to inspect")
         .default(default_selection.try_into().unwrap_or_default())
+        .paged(true)
         .items(&items)
         .interact_on_opt(&Term::stderr())
         .map_or(None, |v| v)
