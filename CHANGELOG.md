@@ -1,3 +1,10 @@
+<a name="0.2.1"></a>
+## 0.2.1 (2021-05-08)
+
+#### Bug Fixes
+
+*   Enable paging for the package selection prompt ([d7d0a547](d7d0a547))
+
 <a name="0.2.0"></a>
 ## 0.2.0 (2021-05-08)
 
