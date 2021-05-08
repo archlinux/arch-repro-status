@@ -20,6 +20,9 @@ use structopt::StructOpt;
     rename_all_env = "screaming-snake"
 )]
 pub struct Args {
+    /// Activates the debug mode
+    #[structopt(short, long)]
+    pub debug: bool,
     /// Sets the username of the maintainer.
     #[structopt(short, long, value_name = "MAINTAINER", env)]
     pub maintainer: String,

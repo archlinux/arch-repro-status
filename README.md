@@ -12,6 +12,7 @@ arch-repro-status [FLAGS] [OPTIONS] --maintainer <MAINTAINER>
 
 ```
 FLAGS:
+    -d, --debug      Activates the debug mode
     -i, --inspect    Views the build log or diffoscope of the interactively selected package
     -h, --help       Prints help information
     -V, --version    Prints version information
