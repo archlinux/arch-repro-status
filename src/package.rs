@@ -72,9 +72,8 @@ impl Package {
         cache_dir: Option<PathBuf>,
     ) -> Result<PathBuf, ReproStatusError> {
         let path = cache_dir
-            .or_else(dirs_next::cache_dir)
+            .or_else(|| dirs_next::cache_dir().map(|p| p.join(env!("CARGO_PKG_NAME"))))
             .ok_or_else(|| IoError::new(IoErrorKind::Other, "cannot find cache directory"))?
-            .join(env!("CARGO_PKG_NAME"))
             .join(format!("{}_{}.log", self.build_id, log_type,));
         if !path.exists() {
             fs::create_dir_all(match path.parent() {
@@ -90,6 +89,7 @@ impl Package {
 mod tests {
     use super::*;
     use anyhow::Result;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_get_log_path() -> Result<()> {
@@ -104,10 +104,7 @@ mod tests {
             build_id: 0,
         };
         let path = package.get_log_path(LogType::Diffoscope, Some(PathBuf::from("test")))?;
-        assert_eq!(
-            format!("test/{}/0_diffoscope.log", env!("CARGO_PKG_NAME")),
-            path.to_string_lossy()
-        );
+        assert_eq!("test/0_diffoscope.log", path.to_string_lossy());
         Ok(())
     }
 }
