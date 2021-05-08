@@ -24,6 +24,7 @@ OPTIONS:
                                      [possible values: GOOD, BAD, UNKWN]
     -p, --pager <PAGER>              Sets the pager for viewing files [env: PAGER=]
                                      [default: less]
+    -c, --cache-dir <DIR>            Sets the cache directory for log files [env: CACHE_DIR=]
 ```
 
 ### Listing packages
