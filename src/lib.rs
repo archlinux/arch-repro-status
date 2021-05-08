@@ -113,7 +113,9 @@ async fn inspect_packages<'a>(
             _ => LogType::Diffoscope,
         };
         let path = packages[index].get_log_path(log_type, args.cache_dir.as_ref().cloned())?;
-        if !path.exists() {
+        if path.exists() {
+            log::debug!("Hit cache for {:?}", path);
+        } else {
             let logs =
                 fetch_rebuilderd_logs(client, &args.rebuilderd, packages[index].build_id, log_type)
                     .await?;
