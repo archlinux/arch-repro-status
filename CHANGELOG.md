@@ -1,3 +1,14 @@
+<a name="0.3.0"></a>
+## 0.3.0 (2021-05-11)
+
+#### Bug Fixes
+
+*   Browse through pages to collect packages from archweb ([30a123d2](30a123d2))
+
+#### Features
+
+*   Add option for showing package information ([f9033b8a](f9033b8a))
+
 <a name="0.2.1"></a>
 ## 0.2.1 (2021-05-08)
 
