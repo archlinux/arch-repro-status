@@ -2,6 +2,7 @@
 
 use crate::archweb::ArchwebPackage;
 use crate::error::ReproStatusError;
+use colored::*;
 use rebuilderd_common::Status;
 use std::env;
 use std::fmt;
@@ -48,17 +49,25 @@ impl Default for Package {
 
 impl fmt::Display for Package {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{} {}{}-{} {}",
-            self.data.pkgname,
+        let version = format!(
+            "{}{}-{}",
             if self.data.epoch != 0 {
                 format!("{}:", self.data.epoch)
             } else {
                 String::new()
             },
             self.data.pkgver,
-            self.data.pkgrel,
+            self.data.pkgrel
+        );
+        write!(
+            f,
+            "{} {} {}",
+            self.data.pkgname,
+            if self.data.flag_date.is_some() {
+                version.truecolor(80, 80, 80).italic()
+            } else {
+                version.normal()
+            },
             self.status.fancy()
         )
     }
