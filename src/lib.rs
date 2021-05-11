@@ -33,13 +33,28 @@ async fn fetch_archweb_packages<'a>(
     client: &'a HttpClient,
     maintainer: &'a str,
 ) -> Result<Vec<ArchwebPackage>, ReproStatusError> {
-    Ok(client
-        .get(&format!("{}/?maintainer={}", ARCHWEB_ENDPOINT, maintainer))
+    let url = format!("{}/?maintainer={}", ARCHWEB_ENDPOINT, maintainer);
+    let response = client
+        .get(&url)
         .send()
         .await?
         .json::<SearchResult>()
-        .await?
-        .results)
+        .await?;
+    let mut results = response.results;
+    if let (Some(page), Some(num_pages)) = (response.page, response.num_pages) {
+        for page in (page + 1)..=num_pages {
+            results.extend(
+                client
+                    .get(&format!("{}&page={}", &url, page))
+                    .send()
+                    .await?
+                    .json::<SearchResult>()
+                    .await?
+                    .results,
+            )
+        }
+    }
+    Ok(results)
 }
 
 /// Fetches the packages from the specified rebuilderd instance.
@@ -169,8 +184,12 @@ fn print_results<Output: Write>(
     } else {
         match negatives {
             0 => log::info!("All packages are reproducible!"),
-            1 => log::info!("1 package is not reproducible."),
-            _ => log::info!("{} packages are not reproducible.", negatives),
+            1 => log::info!("1/{} package is not reproducible.", packages.len()),
+            _ => log::info!(
+                "{}/{} packages are not reproducible.",
+                negatives,
+                packages.len()
+            ),
         }
     }
     Ok(())
