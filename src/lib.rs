@@ -12,9 +12,9 @@ pub mod package;
 use archweb::{ArchwebPackage, SearchResult, ARCHWEB_ENDPOINT};
 use args::Args;
 use colored::*;
-use console::Term;
+use console::{Style, Term};
 use dialoguer::theme::ColorfulTheme;
-use dialoguer::Select;
+use dialoguer::{Confirm, Select};
 use error::ReproStatusError;
 use futures::{executor, future};
 use package::{LogType, Package};
@@ -122,12 +122,26 @@ async fn inspect_packages<'a>(
         .interact_on_opt(&Term::stderr())
         .map_or(None, |v| v)
     {
-        let log_type = match Select::with_theme(&ColorfulTheme::default())
+        let operation = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select operation")
             .default(0)
-            .items(&["show build log", "show diffoscope"])
-            .interact_on_opt(&Term::stderr())?
-        {
+            .items(&["show build log", "show diffoscope", "show package info"])
+            .interact_on_opt(&Term::stderr())?;
+        if let Some(2) = operation {
+            println!("\n{}", packages[index].data);
+            Confirm::with_theme(&ColorfulTheme {
+                hint_style: Style::new().for_stderr().hidden(),
+                prompt_prefix: console::style("❯".to_string()).for_stderr().green(),
+                prompt_suffix: console::style(String::new()).for_stderr().hidden(),
+                ..ColorfulTheme::default()
+            })
+            .with_prompt("Press Enter to continue")
+            .wait_for_newline(true)
+            .show_default(false)
+            .interact_on_opt(&Term::stderr())?;
+            return Ok(Some(index.try_into().unwrap_or_default()));
+        }
+        let log_type = match operation {
             Some(0) => LogType::Build,
             _ => LogType::Diffoscope,
         };

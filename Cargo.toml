@@ -34,6 +34,7 @@ dialoguer = "0.8.0"
 ctrlc = { version = "3.1.9", features = ["termination"] }
 console = "0.14.1"
 dirs-next = "2.0.0"
+bytesize = "1.0.1"
 
 [dependencies.structopt]
 version = "0.3.21"
