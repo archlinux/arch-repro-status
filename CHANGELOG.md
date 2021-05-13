@@ -1,3 +1,10 @@
+<a name="1.0.0"></a>
+## 1.0.0 (2021-05-13)
+
+#### Features
+
+*   Support checking the currently installed packages on the system ([cb8f1a88](cb8f1a88))
+
 <a name="0.3.0"></a>
 ## 0.3.0 (2021-05-11)
 
