@@ -1,14 +1,16 @@
-//! Finds the reproducibility status of a maintainer's packages
-//! using package data from [archlinux.org] and a [rebuilderd] instance.
+//! A CLI tool for querying the [reproducibility] status of the Arch Linux packages
+//! using data from a [rebuilderd] instance such as [reproducible.archlinux.org].
 //!
-//! [archlinux.org]: https://archlinux.org/packages
+//! [reproducibility]: https://reproducible-builds.org/
 //! [rebuilderd]: https://wiki.archlinux.org/index.php/Rebuilderd
+//! [reproducible.archlinux.org]: https://reproducible.archlinux.org/
 
 pub mod archweb;
 pub mod args;
 pub mod error;
 pub mod package;
 
+use alpm::Alpm;
 use archweb::{ArchwebPackage, SearchResult, ARCHWEB_ENDPOINT};
 use args::Args;
 use colored::*;
@@ -169,6 +171,7 @@ async fn inspect_packages<'a>(
 /// Prints the status of the packages to the specified output.
 fn print_results<Output: Write>(
     packages: Vec<Package>,
+    is_local: bool,
     filter: Option<Status>,
     output: &mut Output,
 ) -> Result<(), ReproStatusError> {
@@ -198,22 +201,39 @@ fn print_results<Output: Write>(
     } else {
         match negatives {
             0 => log::info!("All packages are reproducible!"),
-            1 => log::info!("1/{} package is not reproducible.", packages.len()),
+            1 => log::info!(
+                "1/{} package is {} reproducible. Almost there.",
+                packages.len(),
+                "not".bold(),
+            ),
             _ => log::info!(
-                "{}/{} packages are not reproducible.",
+                "{}/{} packages are {} reproducible.",
                 negatives,
-                packages.len()
+                packages.len(),
+                "not".bold(),
             ),
         }
+        log::info!(
+            "Your {} {:.1}% reproducible.",
+            String::from(if is_local {
+                "system is"
+            } else {
+                "packages are"
+            }),
+            ((packages.len() - negatives) as f64 / packages.len() as f64) * 100.
+        )
     }
     Ok(())
 }
 
-/// Runs `arch-repro-status` and prints the results.
-pub fn run(args: Args) -> Result<(), ReproStatusError> {
-    let client = HttpClient::builder().user_agent(APP_USER_AGENT).build()?;
+/// Returns the reproducibility results of an individual maintainer's packages.
+fn get_maintainer_packages<'a>(
+    maintainer: &'a str,
+    client: &'a HttpClient,
+    args: &'a Args,
+) -> Result<Vec<Package>, ReproStatusError> {
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
-        fetch_archweb_packages(&client, &args.maintainer),
+        fetch_archweb_packages(&client, maintainer),
         fetch_rebuilderd_packages(&client, &args.rebuilderd),
     ))?;
     let mut packages = Vec::new();
@@ -231,6 +251,43 @@ pub fn run(args: Args) -> Result<(), ReproStatusError> {
             },
         })
     }
+    Ok(packages)
+}
+
+/// Returns the reproducibility results of the locally installed packages.
+fn get_user_packages<'a>(
+    client: &'a HttpClient,
+    args: &'a Args,
+) -> Result<Vec<Package>, ReproStatusError> {
+    let rebuilderd = executor::block_on(fetch_rebuilderd_packages(&client, &args.rebuilderd))?;
+    log::debug!("querying packages from local database: {}", args.dbpath);
+    let pacman = Alpm::new("/", &args.dbpath)?;
+    let mut packages = Vec::new();
+    for pkg in pacman.localdb().pkgs() {
+        packages.push(match rebuilderd.iter().find(|p| p.name == pkg.name()) {
+            Some(p) => Package {
+                data: ArchwebPackage::from(pkg),
+                status: p.status,
+                build_id: p.build_id.unwrap_or_default(),
+            },
+            None => Package {
+                data: ArchwebPackage::from(pkg),
+                status: Status::Unknown,
+                build_id: 0,
+            },
+        });
+    }
+    Ok(packages)
+}
+
+/// Runs `arch-repro-status` and prints the results/shows dialogues.
+pub fn run(args: Args) -> Result<(), ReproStatusError> {
+    let client = HttpClient::builder().user_agent(APP_USER_AGENT).build()?;
+    let packages = if let Some(ref maintainer) = args.maintainer {
+        get_maintainer_packages(&maintainer, &client, &args)
+    } else {
+        get_user_packages(&client, &args)
+    }?;
     if args.inspect {
         ctrlc::set_handler(move || Term::stdout().show_cursor().expect("failed to show cursor"))?;
         let mut default_selection = Some(0);
@@ -244,7 +301,12 @@ pub fn run(args: Args) -> Result<(), ReproStatusError> {
         }
         Ok(())
     } else {
-        print_results(packages, args.filter, &mut io::stdout())
+        print_results(
+            packages,
+            args.maintainer.is_none(),
+            args.filter,
+            &mut io::stdout(),
+        )
     }
 }
 

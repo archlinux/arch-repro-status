@@ -1,17 +1,25 @@
 .\" Manpage for arch-repro-status.
-.TH ARCH-REPRO-STATUS "1" "April 2021" "arch-repro-status 0.1.0" "User Commands"
+.TH ARCH-REPRO-STATUS "1" "May 2021" "arch-repro-status 1.0.0" "User Commands"
 .SH NAME
 arch-repro-status \- check the reproducibility status of your Arch Linux packages
 
 .SH SYNOPSIS
 .B arch-repro-status
-[FLAGS] [OPTIONS] \fB\-\-maintainer\fR <MAINTAINER>
+[FLAGS] [OPTIONS]
 
 .SH DESCRIPTION
-Check the reproducibility status of the Arch Linux packages using the data
-from archlinux.org and a rebuilderd instance such as reproducible.archlinux.org.
-It only works with official repositories and it is designed for querying the
-packages of an individual package maintainer.
+Check the reproducibility status of the the Arch Linux packages using data
+from a rebuilderd instance such as reproducible.archlinux.org.
+It can show the reproducibility status of:
+.IP \[bu] 2
+packages that belong to an individual package
+maintainer (uses the data from archlinux.org)
+.IP \[bu] 2
+currently installed packages on the system (uses the data from
+pacman local database)
+.PP
+You can inspect the build logs and diffoscope of the packages by
+enabling the interactive mode via \f[C]-i\f[R].
 
 .SS "FLAGS:"
 .TP
@@ -33,6 +41,9 @@ Sets the username of the maintainer [env: MAINTAINER=]
 .TP
 \fB\-r\fR, \fB\-\-rebuilderd\fR <URL>
 Sets the address of the rebuilderd instance [env: REBUILDERD=]  [default: https://reproducible.archlinux.org]
+.TP
+\fB\-b\fR, \fB\-\-dbpath\fR <PATH>
+Sets the path to the pacman database [env: DBPATH=]  [default: /var/lib/pacman]
 .TP
 \fB\-f\fR, \fB\-\-filter\fR <STATUS>
 Sets the filter for package status [env: FILTER=]  [possible values: GOOD, BAD, UNKWN]

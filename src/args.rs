@@ -25,7 +25,7 @@ pub struct Args {
     pub debug: bool,
     /// Sets the username of the maintainer.
     #[structopt(short, long, value_name = "MAINTAINER", env)]
-    pub maintainer: String,
+    pub maintainer: Option<String>,
     /// Sets the address of the rebuilderd instance.
     #[structopt(
         short,
@@ -35,6 +35,15 @@ pub struct Args {
         env
     )]
     pub rebuilderd: String,
+    /// Sets the path to the pacman database.
+    #[structopt(
+        short = "b",
+        long,
+        value_name = "PATH",
+        default_value = "/var/lib/pacman",
+        env
+    )]
+    pub dbpath: String,
     /// Sets the filter for package status.
     #[structopt(
         short,

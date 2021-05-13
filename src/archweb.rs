@@ -1,6 +1,8 @@
 //! Package data from the Arch Linux website.
 
+use alpm::Package as AlpmPackage;
 use bytesize::ByteSize;
+use chrono::NaiveDateTime;
 use colored::*;
 use std::convert::TryInto;
 use std::fmt;
@@ -58,11 +60,29 @@ pub struct ArchwebPackage {
     pub checkdepends: Vec<::serde_json::Value>,
 }
 
+impl<'a> From<AlpmPackage<'a>> for ArchwebPackage {
+    fn from(pkg: AlpmPackage<'a>) -> Self {
+        Self {
+            pkgname: pkg.name().to_string(),
+            pkgver: pkg.version().as_str().to_string(),
+            arch: pkg.arch().unwrap_or("-").to_string(),
+            pkgdesc: pkg.desc().unwrap_or("-").to_string(),
+            url: pkg.url().unwrap_or("-").to_string(),
+            licenses: pkg.licenses().iter().map(String::from).collect(),
+            compressed_size: pkg.size(),
+            installed_size: pkg.isize(),
+            packager: pkg.packager().unwrap_or("-").to_string(),
+            build_date: NaiveDateTime::from_timestamp(pkg.build_date(), 0).to_string(),
+            ..Self::default()
+        }
+    }
+}
+
 impl fmt::Display for ArchwebPackage {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(&format!("\t{:16}: {}\n", "Name".cyan(), self.pkgname))?;
         f.write_str(&format!(
-            "\t{:16}: {}{}-{}\n",
+            "\t{:16}: {}{}{}\n",
             "Version".cyan(),
             if self.epoch != 0 {
                 format!("{}:", self.epoch)
@@ -70,10 +90,16 @@ impl fmt::Display for ArchwebPackage {
                 String::new()
             },
             self.pkgver,
-            self.pkgrel
+            if !self.pkgver.contains('-') {
+                format!("-{}", self.pkgrel)
+            } else {
+                String::new()
+            }
         ))?;
         f.write_str(&format!("\t{:16}: {}\n", "Architecture".cyan(), self.arch))?;
-        f.write_str(&format!("\t{:16}: {}\n", "Repository".cyan(), self.repo))?;
+        if !self.repo.is_empty() {
+            f.write_str(&format!("\t{:16}: {}\n", "Repository".cyan(), self.repo))?;
+        }
         f.write_str(&format!(
             "\t{:16}: {}\n",
             "Description".cyan(),
@@ -85,16 +111,20 @@ impl fmt::Display for ArchwebPackage {
             "License(s)".cyan(),
             self.licenses.join(", ")
         ))?;
-        f.write_str(&format!(
-            "\t{:16}: {}\n",
-            "Maintainer(s)".cyan(),
-            self.maintainers.join(", ")
-        ))?;
-        f.write_str(&format!(
-            "\t{:16}: {}\n",
-            "Package Size".cyan(),
-            ByteSize(self.compressed_size.try_into().unwrap_or_default()).to_string_as(true)
-        ))?;
+        if !self.maintainers.is_empty() {
+            f.write_str(&format!(
+                "\t{:16}: {}\n",
+                "Maintainer(s)".cyan(),
+                self.maintainers.join(", ")
+            ))?;
+        }
+        if self.compressed_size != 0 {
+            f.write_str(&format!(
+                "\t{:16}: {}\n",
+                "Package Size".cyan(),
+                ByteSize(self.compressed_size.try_into().unwrap_or_default()).to_string_as(true)
+            ))?;
+        }
         f.write_str(&format!(
             "\t{:16}: {}\n",
             "Installed Size".cyan(),
@@ -110,21 +140,25 @@ impl fmt::Display for ArchwebPackage {
             "Build Date".cyan(),
             self.build_date
         ))?;
-        f.write_str(&format!(
-            "\t{:16}: {}\n",
-            "Last Updated".cyan(),
-            self.last_update
-        ))?;
+        if !self.last_update.is_empty() {
+            f.write_str(&format!(
+                "\t{:16}: {}\n",
+                "Last Updated".cyan(),
+                self.last_update
+            ))?;
+        }
         if let Some(date) = &self.flag_date {
             f.write_str(&format!("\t{:16}: {}\n", "Flag Date".red(), date))?;
         }
-        f.write_str(&format!(
-            "\t{:16}: https://archlinux.org/packages/{}/{}/{}/\n",
-            "Package URL".cyan(),
-            self.repo,
-            self.arch,
-            self.pkgbase
-        ))?;
+        if !self.repo.is_empty() {
+            f.write_str(&format!(
+                "\t{:16}: https://archlinux.org/packages/{}/{}/{}/\n",
+                "Package URL".cyan(),
+                self.repo,
+                self.arch,
+                self.pkgbase
+            ))?;
+        }
         Ok(())
     }
 }
