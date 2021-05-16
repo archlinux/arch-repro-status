@@ -1,6 +1,6 @@
 [package]
 name = "arch-repro-status"
-version = "1.0.0"
+version = "1.1.0"
 description = "Check the reproducibility status of your Arch Linux packages"
 authors = ["Orhun Parmaksız <orhun@archlinux.org>"]
 edition = "2018"
@@ -28,7 +28,7 @@ thiserror = "1.0.24"
 anyhow = "1.0.40"
 log = "0.4.14"
 pretty_env_logger = "0.4.0"
-rebuilderd-common = "0.10.0"
+rebuilderd-common = "0.11.0"
 colored = "2.0.0"
 dialoguer = "0.8.0"
 ctrlc = { version = "3.1.9", features = ["termination"] }
