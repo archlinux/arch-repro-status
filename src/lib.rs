@@ -151,7 +151,7 @@ fn print_results<Output: Write>(
             ),
         }
         log::info!(
-            "Your {} {:.1}% reproducible.",
+            "Your {} {:.2}% reproducible.",
             String::from(if is_local {
                 "system is"
             } else {
