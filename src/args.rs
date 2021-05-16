@@ -20,9 +20,6 @@ use structopt::StructOpt;
     rename_all_env = "screaming-snake"
 )]
 pub struct Args {
-    /// Activates the debug mode
-    #[structopt(short, long)]
-    pub debug: bool,
     /// Disables logging
     #[structopt(short, long)]
     pub quiet: bool,
