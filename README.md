@@ -14,7 +14,8 @@ arch-repro-status [FLAGS] [OPTIONS]
 
 ```
 FLAGS:
-    -d, --debug      Activates the debug mode
+    -q, --quiet      Disables logging
+    -v, --verbose    Increases the logging verbosity
     -i, --inspect    Views the build log or diffoscope of the interactively selected package
     -h, --help       Prints help information
     -V, --version    Prints version information
@@ -68,9 +69,9 @@ export MAINTAINER=<username>
 # print out BAD results
 arch-repro-status -f BAD
 # enable interactive mode
-arch-repro-status -i -d -f BAD
+arch-repro-status -i -v -f BAD
 # use `bat` to view files
-arch-repro-status -i -d --pager bat
+arch-repro-status -i -v --pager bat
 # specify rebuilderd
 arch-repro-status --rebuilderd https://wolfpit.net/rebuild/
 ```

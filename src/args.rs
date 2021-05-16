@@ -23,6 +23,12 @@ pub struct Args {
     /// Activates the debug mode
     #[structopt(short, long)]
     pub debug: bool,
+    /// Disables logging
+    #[structopt(short, long)]
+    pub quiet: bool,
+    /// Increases the logging verbosity
+    #[structopt(short, long, parse(from_occurrences), alias = "debug")]
+    pub verbose: u8,
     /// Sets the username of the maintainer.
     #[structopt(short, long, value_name = "MAINTAINER", env)]
     pub maintainer: Option<String>,
