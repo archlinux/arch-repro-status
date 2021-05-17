@@ -114,7 +114,7 @@ fn print_results<Output: Write>(
 ) -> Result<(), ReproStatusError> {
     let mut negatives = 0;
     for pkg in &packages {
-        if pkg.status == Status::Bad {
+        if pkg.status != Status::Good {
             negatives += 1;
         }
         if let Some(filter) = filter {
