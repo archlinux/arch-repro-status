@@ -20,12 +20,15 @@ use structopt::StructOpt;
     rename_all_env = "screaming-snake"
 )]
 pub struct Args {
-    /// Disables logging
+    /// Disables logging.
     #[structopt(short, long)]
     pub quiet: bool,
-    /// Increases the logging verbosity
+    /// Increases the logging verbosity.
     #[structopt(short, long, parse(from_occurrences), alias = "debug")]
     pub verbose: u8,
+    /// Checks all of the packages on the system.
+    #[structopt(short, long)]
+    pub all: bool,
     /// Sets the username of the maintainer.
     #[structopt(short, long, value_name = "MAINTAINER", env)]
     pub maintainer: Option<String>,

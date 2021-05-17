@@ -211,7 +211,7 @@ fn get_user_packages<'a>(
         .collect::<Vec<AlpmPackage>>();
     let mut packages = Vec::new();
     for pkg in pacman.localdb().pkgs() {
-        if !syncpkgs.iter().any(|p| pkg.base() == p.base()) {
+        if !args.all && !syncpkgs.iter().any(|p| pkg.base() == p.base()) {
             continue;
         }
         packages.push(match rebuilderd.iter().find(|p| p.name == pkg.name()) {

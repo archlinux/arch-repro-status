@@ -16,6 +16,7 @@ arch-repro-status [FLAGS] [OPTIONS]
 FLAGS:
     -q, --quiet      Disables logging
     -v, --verbose    Increases the logging verbosity
+    -a, --all        Checks all of the packages on the system
     -i, --inspect    Views the build log or diffoscope of the interactively selected package
     -h, --help       Prints help information
     -V, --version    Prints version information
