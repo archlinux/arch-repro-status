@@ -11,7 +11,7 @@ pub mod error;
 mod fetch;
 pub mod package;
 
-use alpm::{Alpm, SigLevel};
+use alpm::{Alpm, Package as AlpmPackage, SigLevel};
 use archweb::ArchwebPackage;
 use args::Args;
 use colored::*;
@@ -204,16 +204,14 @@ fn get_user_packages<'a>(
         pacman.register_syncdb(repo.to_string(), SigLevel::DATABASE_OPTIONAL)?;
     }
     let syncdbs = pacman.syncdbs();
+    let syncpkgs = syncdbs
+        .into_iter()
+        .map(|db| db.pkgs().iter().collect::<Vec<AlpmPackage>>())
+        .flatten()
+        .collect::<Vec<AlpmPackage>>();
     let mut packages = Vec::new();
     for pkg in pacman.localdb().pkgs() {
-        let mut foreign_package = true;
-        for db in syncdbs {
-            if db.pkgs().iter().any(|p| pkg.base() == p.base()) {
-                foreign_package = false;
-                break;
-            }
-        }
-        if foreign_package {
+        if !syncpkgs.iter().any(|p| pkg.base() == p.base()) {
             continue;
         }
         packages.push(match rebuilderd.iter().find(|p| p.name == pkg.name()) {
