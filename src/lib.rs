@@ -11,7 +11,7 @@ pub mod error;
 mod fetch;
 pub mod package;
 
-use alpm::Alpm;
+use alpm::{Alpm, SigLevel};
 use archweb::ArchwebPackage;
 use args::Args;
 use colored::*;
@@ -199,8 +199,23 @@ fn get_user_packages<'a>(
     let rebuilderd = executor::block_on(fetch_rebuilderd_packages(&client, &args.rebuilderd))?;
     log::debug!("querying packages from local database: {}", args.dbpath);
     let pacman = Alpm::new("/", &args.dbpath)?;
+    for repo in &args.repos {
+        log::debug!("registering syncdb: {}", repo);
+        pacman.register_syncdb(repo.to_string(), SigLevel::DATABASE_OPTIONAL)?;
+    }
+    let syncdbs = pacman.syncdbs();
     let mut packages = Vec::new();
     for pkg in pacman.localdb().pkgs() {
+        let mut foreign_package = true;
+        for db in syncdbs {
+            if db.pkgs().iter().any(|p| pkg.base() == p.base()) {
+                foreign_package = false;
+                break;
+            }
+        }
+        if foreign_package {
+            continue;
+        }
         packages.push(match rebuilderd.iter().find(|p| p.name == pkg.name()) {
             Some(p) => Package {
                 data: ArchwebPackage::from(pkg),

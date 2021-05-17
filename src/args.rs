@@ -47,6 +47,14 @@ pub struct Args {
         env
     )]
     pub dbpath: String,
+    /// Sets the repositories to query.
+    #[structopt(
+        long,
+        value_name = "REPO",
+        default_value = "core,extra,community,multilib",
+        use_delimiter = true
+    )]
+    pub repos: Vec<String>,
     /// Sets the filter for package status.
     #[structopt(
         short,

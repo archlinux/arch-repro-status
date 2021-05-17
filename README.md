@@ -26,6 +26,8 @@ OPTIONS:
                                      [default: https://reproducible.archlinux.org]
     -b, --dbpath <PATH>              Sets the path to the pacman database [env: DBPATH=]
                                      [default: /var/lib/pacman]
+        --repos <REPO>...            Sets the repositories to query
+                                     [default: core,extra,community,multilib]
     -f, --filter <STATUS>            Sets the filter for package status [env: FILTER=]
                                      [possible values: GOOD, BAD, UNKWN]
     -p, --pager <PAGER>              Sets the pager for viewing files [env: PAGER=]
