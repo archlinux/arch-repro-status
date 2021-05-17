@@ -1,6 +1,6 @@
 [package]
 name = "arch-repro-status"
-version = "1.1.0"
+version = "1.2.0"
 description = "Check the reproducibility status of your Arch Linux packages"
 authors = ["Orhun Parmaksız <orhun@archlinux.org>"]
 edition = "2018"
@@ -19,7 +19,7 @@ dumb_terminal = ["colored/no-color"]
 
 [dependencies]
 reqwest = { version = "0.11.3", features = ["json"] }
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.6.0", features = ["full"] }
 futures = { version = "0.3.15", features = ["executor"] }
 serde = { version = "1.0.126", features = ["derive"] }
 serde_derive = "1.0.126"
@@ -35,7 +35,7 @@ ctrlc = { version = "3.1.9", features = ["termination"] }
 console = "0.14.1"
 dirs-next = "2.0.0"
 bytesize = "1.0.1"
-alpm = "1.1.13"
+alpm = "1.1.14"
 chrono = "0.4.19"
 
 [dependencies.structopt]

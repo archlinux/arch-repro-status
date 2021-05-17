@@ -1,3 +1,12 @@
+<a name="1.2.0"></a>
+## 1.2.0 (2021-05-17)
+
+#### Features
+
+*   Add '--all' argument for including the foreign packages ([aff78dff](aff78dff))
+*   Count UNKWN results as negative ([5c25d98e](5c25d98e))
+*   Exclude foreign packages for more accurate result ([df2b8258](df2b8258))
+
 <a name="1.1.0"></a>
 ## 1.1.0 (2021-05-16)
 
