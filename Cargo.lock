@@ -13,9 +13,9 @@ dependencies = [
 
 [[package]]
 name = "alpm"
-version = "1.1.14"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50b8cd36581cd365947f6faa0274cad9ae11464ecc8de94f92b66ee979b6b8cf"
+checksum = "83e9c8f7aa474b95567a6895a8995efe81c685e899d500bc7475d8f159fa0d21"
 dependencies = [
  "alpm-sys",
  "bitflags",
@@ -23,9 +23,9 @@ dependencies = [
 
 [[package]]
 name = "alpm-sys"
-version = "1.1.9"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9f4f5f19990f1c5fb4d57f29251001db4b03d81bdf648f0a81c65083e47f8b4"
+checksum = "6bc975d7c0bc845e5206599b1df8a35141d0215384cf654edc449ed5bc0a2a36"
 
 [[package]]
 name = "ansi_term"
@@ -990,9 +990,9 @@ dependencies = [
 
 [[package]]
 name = "rebuilderd-common"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "661217730bae11c9392dd45b5f8bbba31113754c0e645b07cc66e33b64d3f2c1"
+checksum = "a9ece937ca31595961ac1a716225674dbc7796341799c0bba4cde96a2d18f868"
 dependencies = [
  "anyhow",
  "chrono",
