@@ -1,3 +1,7 @@
+<a name="1.2.1"></a>
+## 1.2.1 (2021-05-20)
+* Bump dependencies for Pacman 6.0 build
+
 <a name="1.2.0"></a>
 ## 1.2.0 (2021-05-17)
 
