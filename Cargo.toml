@@ -1,6 +1,6 @@
 [package]
 name = "arch-repro-status"
-version = "1.2.1"
+version = "1.2.2"
 description = "Check the reproducibility status of your Arch Linux packages"
 authors = ["Orhun Parmaksız <orhun@archlinux.org>"]
 edition = "2018"
