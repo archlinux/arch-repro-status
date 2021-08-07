@@ -170,8 +170,8 @@ fn get_maintainer_packages<'a>(
     args: &'a Args,
 ) -> Result<Vec<Package>, ReproStatusError> {
     let (archweb, rebuilderd) = executor::block_on(future::try_join(
-        fetch_archweb_packages(&client, maintainer),
-        fetch_rebuilderd_packages(&client, &args.rebuilderd),
+        fetch_archweb_packages(client, maintainer),
+        fetch_rebuilderd_packages(client, &args.rebuilderd),
     ))?;
     let mut packages = Vec::new();
     for pkg in archweb {
@@ -196,7 +196,7 @@ fn get_user_packages<'a>(
     client: &'a HttpClient,
     args: &'a Args,
 ) -> Result<Vec<Package>, ReproStatusError> {
-    let rebuilderd = executor::block_on(fetch_rebuilderd_packages(&client, &args.rebuilderd))?;
+    let rebuilderd = executor::block_on(fetch_rebuilderd_packages(client, &args.rebuilderd))?;
     log::debug!("querying packages from local database: {}", args.dbpath);
     let pacman = Alpm::new("/", &args.dbpath)?;
     for repo in &args.repos {
@@ -234,7 +234,7 @@ fn get_user_packages<'a>(
 pub fn run(args: Args) -> Result<(), ReproStatusError> {
     let client = HttpClient::builder().user_agent(APP_USER_AGENT).build()?;
     let packages = if let Some(ref maintainer) = args.maintainer {
-        get_maintainer_packages(&maintainer, &client, &args)
+        get_maintainer_packages(maintainer, &client, &args)
     } else {
         get_user_packages(&client, &args)
     }?;
