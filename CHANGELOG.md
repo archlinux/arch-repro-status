@@ -1,3 +1,7 @@
+<a name="1.2.4"></a>
+## 1.2.3 (2021-06-27)
+* Bump dependencies
+
 <a name="1.2.3"></a>
 ## 1.2.3 (2021-06-27)
 * Bump dependencies

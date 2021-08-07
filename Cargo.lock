@@ -56,7 +56,7 @@ checksum = "595d3cfa7a60d4555cb5067b99f07142a08ea778de5cf993f7b75c7d8fabc486"
 
 [[package]]
 name = "arch-repro-status"
-version = "1.2.3"
+version = "1.2.4"
 dependencies = [
  "alpm",
  "anyhow",
