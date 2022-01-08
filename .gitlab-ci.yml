@@ -6,6 +6,7 @@ before_script:
 stages:
   - lint
   - test
+  - audit
 
 format:
   stage: lint
@@ -18,7 +19,7 @@ clippy:
     - cargo clippy --all -- -D warnings
 
 audit:
-  stage: lint
+  stage: audit
   script:
     - cargo audit
 
