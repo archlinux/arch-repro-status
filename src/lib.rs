@@ -205,8 +205,7 @@ fn get_user_packages<'a>(
     let syncdbs = pacman.syncdbs();
     let syncpkgs = syncdbs
         .into_iter()
-        .map(|db| db.pkgs().iter().collect::<Vec<AlpmPackage>>())
-        .flatten()
+        .flat_map(|db| db.pkgs().iter().collect::<Vec<AlpmPackage>>())
         .collect::<Vec<AlpmPackage>>();
     let mut packages = Vec::new();
     for pkg in pacman.localdb().pkgs() {
