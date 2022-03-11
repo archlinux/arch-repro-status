@@ -1,3 +1,9 @@
+<a name="1.2.8"></a>
+## 1.2.8 (2022-03-11)
+* Migrate to Rust 2021 edition
+* Switch to clap for argument parsing
+* Bump dependencies
+
 <a name="1.2.7"></a>
 ## 1.2.7 (2022-01-08)
 * Bump dependencies
