@@ -1,11 +1,11 @@
 .\" Manpage for arch-repro-status.
-.TH ARCH-REPRO-STATUS "1" "Jan 2022" "arch-repro-status 1.2.7" "User Commands"
+.TH ARCH-REPRO-STATUS "1" "March 2022" "arch-repro-status 1.2.7" "User Commands"
 .SH NAME
 arch-repro-status \- check the reproducibility status of your Arch Linux packages
 
 .SH SYNOPSIS
 .B arch-repro-status
-[FLAGS] [OPTIONS]
+[OPTIONS]
 
 .SH DESCRIPTION
 Check the reproducibility status of the the Arch Linux packages using data
@@ -21,7 +21,7 @@ pacman local database)
 You can inspect the build logs and diffoscope of the packages by
 enabling the interactive mode via \f[C]-i\f[R].
 
-.SS "FLAGS:"
+.SS "OPTIONS:"
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 Disables logging
@@ -32,36 +32,40 @@ Increases the logging verbosity
 \fB\-a\fR, \fB\-\-all\fR
 Checks all of the packages on the system
 .TP
-\fB\-i\fR, \fB\-\-inspect\fR
-Views the build log or diffoscope of the interactively selected package
-.TP
-\fB\-h\fR, \fB\-\-help\fR
-Prints help information
-.TP
-\fB\-V\fR, \fB\-\-version\fR
-Prints version information
-.SS "OPTIONS:"
-.TP
 \fB\-m\fR, \fB\-\-maintainer\fR <MAINTAINER>
 Sets the username of the maintainer [env: MAINTAINER=]
 .TP
 \fB\-r\fR, \fB\-\-rebuilderd\fR <URL>
-Sets the address of the rebuilderd instance [env: REBUILDERD=]  [default: https://reproducible.archlinux.org]
+Sets the address of the rebuilderd instance [env: REBUILDERD=]
+[default: https://reproducible.archlinux.org]
 .TP
 \fB\-b\fR, \fB\-\-dbpath\fR <PATH>
-Sets the path to the pacman database [env: DBPATH=]  [default: /var/lib/pacman]
+Sets the path to the pacman database [env: DBPATH=] [default:
+/var/lib/pacman]
 .TP
-\fB\-\-repos\fR <REPO>...
-Sets the repositories to query [default: core,extra,community,multilib]
+\fB\-\-repos\fR <REPO>
+Sets the repositories to query [default:
+core,extra,community,multilib]
 .TP
 \fB\-f\fR, \fB\-\-filter\fR <STATUS>
-Sets the filter for package status [env: FILTER=]  [possible values: GOOD, BAD, UNKWN]
+Sets the filter for package status [env: FILTER=] [possible
+values: GOOD, BAD, UNKWN]
+.TP
+\fB\-i\fR, \fB\-\-inspect\fR
+Views the build log or diffoscope of the interactively selected
+package
 .TP
 \fB\-p\fR, \fB\-\-pager\fR <PAGER>
-Sets the pager for viewing files [env: PAGER=]  [default: less]
+Sets the pager for viewing files [env: PAGER=] [default: less]
 .TP
 \fB\-c\fR, \fB\-\-cache\-dir\fR <DIR>
 Sets the cache directory for log files [env: CACHE_DIR=]
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help information
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version information
 
 .SH BUGS
 Report bugs at <https://gitlab.archlinux.org/archlinux/arch-repro-status/-/issues>
