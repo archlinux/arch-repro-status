@@ -11,7 +11,7 @@ use std::fmt;
 pub const ARCHWEB_ENDPOINT: &str = "https://archlinux.org/packages/search/json";
 
 /// Search result from archlinux.org
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchResult {
     pub version: i64,
@@ -24,7 +24,7 @@ pub struct SearchResult {
 }
 
 /// Package data that archlinux.org provides.
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ArchwebPackage {
     pub pkgname: String,
